@@ -25,9 +25,6 @@ ORDER BY rented DESC limit 5;""" )
     return_data = { 
         'TopMovies' : [],
         'TopActors':  [],
-        'MovieDetails': [],
-        'ActorDetails': [],
-        'ActorMovies': []
     }
     output = cursor.fetchall()
     for item in output:
@@ -51,6 +48,18 @@ ORDER BY Count(*) DESC limit 5;""" )
 @app.route('/home', methods = ["GET"])
 def home():
     return return_data
+
+@app.route('/ret_movie_details', methods = ["GET","POST"])
+def movies():
+    movie_q = request.get_json()
+    with app.app_context():
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT * FROM film WHERE title = \"" + movie_q + "\"; ")
+        output = cursor.fetchall()
+        mysql.connection.commit()
+        cursor.close()
+        print(output)
+    return jsonify(data = output)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
